@@ -3,11 +3,12 @@ package Tournament;
 import Competitors.Human;
 import Competitors.Spartan;
 import Competitors.Vikings;
-
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import com.mysql.jdbc.Driver;
 
 public class Tourney {
     private ArrayList<Vikings> vikings;
@@ -48,8 +49,10 @@ public class Tourney {
             System.out.println("cerveza espartana tomada por "+s.getNombre()+" es de "+s.getBeer());
         }
         if (this.quantityV > this.quantityS) {
+            this.persistance("Vikings",this.quantityV);
             System.out.println("ha ganado el equipo vikingo con un total de " + this.quantityV + " cervezas bebidas");
         } else {
+            this.persistance("Spartan",this.quantityS);
             System.out.println("ha ganado el equipo espartano con un total de " + this.quantityS + " cervezas bebidas");
         }
 
@@ -123,7 +126,30 @@ private void compare(ArrayList list){
         }
     });
 }
-public void persistance(){
-Class.forName()
+public void persistance(String winner,int beer){
+    Connection conexion = null;
+    Statement sentencia;
+    ResultSet resultado;
+
+    try {
+        Class.forName("com.mysql.jdbc.Driver");
+    }
+    catch (Exception e){
+        System.out.println( "No se pudo cargar el puente JDBC-ODBC." );
+        return;
+    }
+    try {
+        // Se establece la conexión con la base de datos
+        conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/tp1?autoReconnect=true&useSSL=false", "root", "");
+
+        sentencia = conexion.createStatement();
+        sentencia.execute("INSERT INTO winners (teamWin,totalBeer)\n" +
+                "VALUES (\""+winner+"\","+beer+");");
+    }catch (Exception e){
+        System.out.println( e );
+        return;
+
+    }
+
 }
 }
